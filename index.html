@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta IA - Proyecto Universidad</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 { margin-top: 0; text-align: center; color: var(--primary); }
+        .group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #1d4ed8; }
+        #status { margin-top: 1rem; text-align: center; font-size: 0.9rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Impacto de la IA</h2>
+    
+    <div class="group">
+        <label for="freq">1. ¿Cuántas veces usas IA al día?</label>
+        <input type="number" id="freq" min="0" value="1">
+    </div>
+
+    <div class="group">
+        <label for="diario">2. ¿La usas en actividades diarias?</label>
+        <select id="diario">
+            <option value="Si">Sí</option>
+            <option value="No">No</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="conciencia">3. ¿Estás consciente de qué es una IA?</label>
+        <select id="conciencia">
+            <option value="Total">Totalmente consciente</option>
+            <option value="Parcial">Parcialmente consciente</option>
+            <option value="Nula">No sé qué es</option>
+        </select>
+    </div>
+
+    <div class="group">
+        <label for="tiempo">4. Minutos de uso por sesión:</label>
+        <input type="number" id="tiempo" min="0" value="15">
+    </div>
+
+    <button onclick="enviarEncuesta()">Guardar Respuestas</button>
+    <div id="status"></div>
+</div>
+
+<script>
+async function enviarEncuesta() {
+    const status = document.getElementById('status');
+    const payload = {
+        frecuencia: document.getElementById('freq').value,
+        usoDiario: document.getElementById('diario').value,
+        nivelConciencia: document.getElementById('conciencia').value,
+        tiempoMinutos: document.getElementById('tiempo').value
+    };
+
+    status.style.color = "#0284c7";
+    status.innerText = "Procesando respuesta...";
+
+    try {
+        const response = await fetch('http://localhost:8080/guardar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            status.style.color = "#16a34a";
+            status.innerText = "¡Base de datos actualizada!";
+        }
+    } catch (err) {
+        status.style.color = "#dc2626";
+        status.innerText = "Error: Verifica que el servidor C++ esté ejecutándose.";
+    }
+}
+</script>
+
+</body>
+</html>
